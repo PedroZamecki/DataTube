@@ -16,10 +16,14 @@ async function get(expectedResponse = 200) {
   return responseBody;
 }
 
-test("GET to /api/v1/migrations returns 200", async () => {
-  const firstGetBody = await get();
-  expect(firstGetBody.length).toBeGreaterThan(0);
+describe("GET /api/v1/migrations", () => {
+  describe("Anonymous user", () => {
+    test("Retrieving pending migrations", async () => {
+      const firstGetBody = await get();
+      expect(firstGetBody.length).toBeGreaterThan(0);
 
-  const secondGetBody = await get();
-  expect(secondGetBody.length).toBe(firstGetBody.length);
+      const secondGetBody = await get();
+      expect(secondGetBody.length).toBe(firstGetBody.length);
+    });
+  });
 });

@@ -18,10 +18,18 @@ async function post(expectedResponse = 200) {
   return responseBody;
 }
 
-test("POST to /api/v1/migrations returns 200", async () => {
-  const firstPostBody = await post(201);
-  expect(firstPostBody.length).toBeGreaterThan(0);
+describe("POST /api/v1/migrations", () => {
+  describe("Anonymous user", () => {
+    describe("Running pending migrations", () => {
+      test("For the first time", async () => {
+        const firstPostBody = await post(201);
+        expect(firstPostBody.length).toBeGreaterThan(0);
+      });
 
-  const secondPostBody = await post();
-  expect(secondPostBody.length).toBe(0);
+      test("For the second time", async () => {
+        const secondPostBody = await post();
+        expect(secondPostBody.length).toBe(0);
+      });
+    });
+  });
 });
