@@ -1,6 +1,7 @@
 import migrationRunner from "node-pg-migrate";
 import { resolve } from "node:path";
 import database from "infra/database";
+import { ServiceError } from "infra/errors.js";
 
 const migrationConfig = {
   dir: resolve("infra", "migrations"),
@@ -19,6 +20,13 @@ async function getMigrationsList(options = {}) {
       ...options,
     });
     return migrations;
+  } catch (error) {
+    console.error(error);
+    const publicServiceError = new ServiceError({
+      message: "Serviço de migração indisponível no momento.",
+      cause: error,
+    });
+    throw publicServiceError;
   } finally {
     dbClient?.end();
   }
