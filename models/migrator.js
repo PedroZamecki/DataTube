@@ -7,6 +7,7 @@ const migrationConfig = {
   dir: resolve("infra", "migrations"),
   direction: "up",
   migrationsTable: "pgmigrations",
+  log: () => {},
 };
 
 async function getMigrationsList(options = {}) {
