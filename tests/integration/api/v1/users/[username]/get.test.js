@@ -1,5 +1,7 @@
 import orchestrator from "tests/orchestrator";
 import { version as uuidVersion } from "uuid";
+import user from "models/user.js";
+import password from "models/password.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -32,7 +34,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: responseBody.id,
         username: "Test",
         email: "test@gmail.com",
-        password: "123",
+        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -40,6 +42,19 @@ describe("GET /api/v1/users/[username]", () => {
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(responseBody.created_at).not.toBeNaN();
       expect(responseBody.updated_at).not.toBeNaN();
+
+      const userInDatabase = await user.findOneByUsername("test");
+      const correctPasswordMatch = await password.compare(
+        "123",
+        userInDatabase.password,
+      );
+      expect(correctPasswordMatch).toBe(true);
+
+      const incorrectPasswordMatch = await password.compare(
+        "incorrectPassword",
+        userInDatabase.password,
+      );
+      expect(incorrectPasswordMatch).toBe(false);
     });
 
     test("With case mismatch", async () => {
@@ -51,7 +66,7 @@ describe("GET /api/v1/users/[username]", () => {
         id: responseBody.id,
         username: "Test",
         email: "test@gmail.com",
-        password: "123",
+        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -59,6 +74,19 @@ describe("GET /api/v1/users/[username]", () => {
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(responseBody.created_at).not.toBeNaN();
       expect(responseBody.updated_at).not.toBeNaN();
+
+      const userInDatabase = await user.findOneByUsername("test");
+      const correctPasswordMatch = await password.compare(
+        "123",
+        userInDatabase.password,
+      );
+      expect(correctPasswordMatch).toBe(true);
+
+      const incorrectPasswordMatch = await password.compare(
+        "incorrectPassword",
+        userInDatabase.password,
+      );
+      expect(incorrectPasswordMatch).toBe(false);
     });
 
     test("With nonexistent 'username'", async () => {
