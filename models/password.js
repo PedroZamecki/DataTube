@@ -1,4 +1,5 @@
 import bcryptjs from "bcryptjs";
+import { ConfigurationError } from "infra/errors.js";
 
 async function hash(password) {
   const rounds = getNumberOfRounds();
@@ -14,6 +15,13 @@ function getNumberOfRounds() {
 }
 
 function passwordWithPepper(password) {
+  if (!process.env.DATABASE_PEPPER) {
+    throw new ConfigurationError({
+      message:
+        "Variável de ambiente 'DATABASE_PEPPER' não presente no sistema.",
+    });
+  }
+
   return password + process.env.DATABASE_PEPPER;
 }
 
