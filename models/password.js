@@ -1,5 +1,6 @@
 import bcryptjs from "bcryptjs";
 import { ConfigurationError } from "infra/errors.js";
+import crypto from "crypto";
 
 async function hash(password) {
   const rounds = getNumberOfRounds();
@@ -22,7 +23,10 @@ function passwordWithPepper(password) {
     });
   }
 
-  return password + process.env.DATABASE_PEPPER;
+  return crypto
+    .createHmac("sha256", process.env.DATABASE_PEPPER)
+    .update(password)
+    .digest("hex");
 }
 
 const password = { hash, compare };
