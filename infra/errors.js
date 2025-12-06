@@ -101,3 +101,25 @@ export class NotFoundError extends Error {
     };
   }
 }
+
+export class ConfigurationError extends Error {
+  constructor({ message, cause }) {
+    super(message || "Erro de configuração do servidor.", {
+      cause,
+    });
+
+    this.name = "ConfigurationError";
+    this.action =
+      "Entre em contato com o administrador do sistema. Uma configuração obrigatória está ausente ou inválida.";
+    this.statusCode = 500;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      action: this.action,
+      status_code: this.statusCode,
+    };
+  }
+}
