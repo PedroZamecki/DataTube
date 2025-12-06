@@ -47,5 +47,9 @@ function getSSLValues() {
     };
   }
 
+  if (process.env.POSTGRES_FORCE_SSL) {
+    return process.env.POSTGRES_FORCE_SSL === "true";
+  }
+
   return process.env.NODE_ENV === "production";
 }
