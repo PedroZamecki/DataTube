@@ -18,18 +18,19 @@ describe("POST /api/v1/users", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: "test",
-          email: "test@gmail.com",
-          password: "123",
+          username: "validData",
+          email: "validdata@gmail.com",
+          password: "correctPassword",
         }),
       });
       expect(response.status).toBe(201);
 
       const responseBody = await response.json();
+
       expect(responseBody).toEqual({
         id: responseBody.id,
-        username: "test",
-        email: "test@gmail.com",
+        username: "validData",
+        email: "validdata@gmail.com",
         password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
@@ -39,9 +40,9 @@ describe("POST /api/v1/users", () => {
       expect(responseBody.created_at).not.toBeNaN();
       expect(responseBody.updated_at).not.toBeNaN();
 
-      const userInDatabase = await user.findOneByUsername("test");
+      const userInDatabase = await user.findOneByUsername("validData");
       const correctPasswordMatch = await password.compare(
-        "123",
+        "correctPassword",
         userInDatabase.password,
       );
       expect(correctPasswordMatch).toBe(true);
@@ -54,21 +55,23 @@ describe("POST /api/v1/users", () => {
     });
 
     test("With duplicated 'username'", async () => {
-      const response2 = await fetch("http://localhost:3000/api/v1/users", {
+      const originalUser = await orchestrator.createUser();
+
+      const response = await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: "Test",
-          email: "test2@gmail.com",
+          username: originalUser.username,
+          email: "anotheremail@gmail.com",
           password: "123",
         }),
       });
-      expect(response2.status).toBe(400);
+      expect(response.status).toBe(400);
 
-      const response2Body = await response2.json();
-      expect(response2Body).toEqual({
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
         name: "ValidationError",
         message: "O apelido informado já está sendo utilizado.",
         action: "Ajuste o apelido e tente novamente.",
@@ -77,14 +80,16 @@ describe("POST /api/v1/users", () => {
     });
 
     test("With duplicated 'email'", async () => {
+      const originalUser = await orchestrator.createUser();
+
       const response2 = await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: "test 2",
-          email: "Test@gmail.com",
+          username: "anotherValidUsername",
+          email: originalUser.email,
           password: "123",
         }),
       });
