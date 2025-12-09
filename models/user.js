@@ -149,6 +149,31 @@ async function findOneByUsername(username) {
   return results.rows[0];
 }
 
-const user = { create, update, findOneByUsername };
+async function findOneByEmail(email) {
+  const results = await database.query({
+    text: `
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        LOWER(email) = LOWER($1)
+      LIMIT
+        1
+      ;`,
+    values: [email],
+  });
+
+  if (results.rows.length == 0) {
+    throw new NotFoundError({
+      message: "O email informado não foi encontrado no sistema.",
+      action: "Verifique se o email está digitado corretamente",
+    });
+  }
+
+  return results.rows[0];
+}
+
+const user = { create, update, findOneByUsername, findOneByEmail };
 
 export default user;
