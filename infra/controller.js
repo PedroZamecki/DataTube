@@ -10,6 +10,7 @@ import session from "models/session.js";
 
 const controller = {
   setSessionCookie,
+  setExpiredCookie,
   errorHandlers: {
     onNoMatch: onNoMatchHandler,
     onError: onErrorHandler,
@@ -40,6 +41,17 @@ function setSessionCookie(sessionToken, response) {
   const setCookie = cookie.serialize("session_id", sessionToken, {
     path: "/",
     maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+  });
+
+  response.setHeader("Set-Cookie", setCookie);
+}
+
+function setExpiredCookie(sessionToken, response) {
+  const setCookie = cookie.serialize("session_id", sessionToken, {
+    path: "/",
+    maxAge: -1,
     secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   });
