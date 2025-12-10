@@ -9,7 +9,7 @@ beforeAll(async () => {
   await orchestrator.runPendingMigrations();
 });
 
-describe("POST /api/v1/status", () => {
+describe("POST /api/v1/sessions", () => {
   describe("Anonymous user", () => {
     test("With incorrect `email` and incorrect `password`", async () => {
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
