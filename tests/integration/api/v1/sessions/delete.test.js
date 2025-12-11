@@ -101,7 +101,7 @@ describe("DELETE /api/v1/sessions", () => {
 
       expect(parsedSetCookie.session_id).toEqual({
         name: "session_id",
-        value: sessionObject.token,
+        value: "invalid",
         maxAge: -1,
         path: "/",
         httpOnly: true,
